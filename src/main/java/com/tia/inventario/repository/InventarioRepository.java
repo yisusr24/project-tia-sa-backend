@@ -27,6 +27,38 @@ public class InventarioRepository {
         """;
         return jdbcTemplate.query(sql, inventarioRowMapper, localId);
     }
+
+    public List<Inventario> searchByLocalAndName(Long localId, String query) {
+        return searchByLocalAndNamePaginated(localId, query, 0, 20);
+    }
+    
+    public List<Inventario> searchByLocalAndNamePaginated(Long localId, String query, int page, int size) {
+        String term = "%" + query.trim() + "%";
+        int offset = page * size;
+        String sql = """
+            SELECT i.*, p.nombre as producto_nombre, p.codigo as producto_codigo, l.nombre as local_nombre, p.precio_venta
+            FROM inventario i
+            JOIN productos p ON i.producto_id = p.id
+            JOIN locales l ON i.local_id = l.id
+            WHERE i.local_id = ? 
+            AND (LOWER(p.nombre) LIKE LOWER(?) OR LOWER(p.codigo) LIKE LOWER(?))
+            ORDER BY p.nombre
+            LIMIT ? OFFSET ?
+        """;
+        return jdbcTemplate.query(sql, inventarioRowMapper, localId, term, term, size, offset);
+    }
+
+    public long countSearchByLocalAndName(Long localId, String query) {
+        String term = "%" + query.trim() + "%";
+        String sql = """
+            SELECT COUNT(*)
+            FROM inventario i
+            JOIN productos p ON i.producto_id = p.id
+            WHERE i.local_id = ? 
+            AND (LOWER(p.nombre) LIKE LOWER(?) OR LOWER(p.codigo) LIKE LOWER(?))
+        """;
+        return Optional.ofNullable(jdbcTemplate.queryForObject(sql, Long.class, localId, term, term)).orElse(0L);
+    }
     public Optional<Inventario> findByLocalAndProducto(Long localId, Long productoId) {
         try {
             String sql = """
@@ -81,5 +113,19 @@ public class InventarioRepository {
     public long countLowStockByLocalId(Long localId) {
         String sql = "SELECT COUNT(*) FROM inventario WHERE local_id = ? AND stock_actual <= CASE WHEN stock_minimo > 0 THEN stock_minimo ELSE 5 END";
         return Optional.ofNullable(jdbcTemplate.queryForObject(sql, Long.class, localId)).orElse(0L);
+    }
+
+    public List<Inventario> findLowStockByLocal(Long localId) {
+        String sql = """
+            SELECT i.*, p.nombre as producto_nombre, p.codigo as producto_codigo, 
+                   l.nombre as local_nombre, p.precio_venta
+            FROM inventario i
+            JOIN productos p ON i.producto_id = p.id
+            JOIN locales l ON i.local_id = l.id
+            WHERE i.local_id = ? 
+            AND i.stock_actual <= (CASE WHEN i.stock_minimo > 0 THEN i.stock_minimo ELSE 5 END)
+            ORDER BY p.nombre
+        """;
+        return jdbcTemplate.query(sql, inventarioRowMapper, localId);
     }
 }

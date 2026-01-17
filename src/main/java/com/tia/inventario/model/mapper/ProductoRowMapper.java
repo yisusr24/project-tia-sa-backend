@@ -12,8 +12,11 @@ public class ProductoRowMapper implements RowMapper<Producto> {
                 .nombre(rs.getString("nombre"))
                 .descripcion(rs.getString("descripcion"))
                 .categoriaId(rs.getLong("categoria_id"))
+                .categoriaNombre(hasColumn(rs, "categoria_nombre") ? rs.getString("categoria_nombre") : null)
                 .proveedorId(rs.getLong("proveedor_id"))
+                .proveedorNombre(hasColumn(rs, "proveedor_nombre") ? rs.getString("proveedor_nombre") : null)
                 .unidadMedidaId(rs.getLong("unidad_medida_id"))
+                
                 .precioCompra(rs.getBigDecimal("precio_compra"))
                 .precioVenta(rs.getBigDecimal("precio_venta"))
                 .precioVentaMinimo(rs.getBigDecimal("precio_venta_minimo"))
@@ -32,5 +35,16 @@ public class ProductoRowMapper implements RowMapper<Producto> {
                 .deletedAt(rs.getTimestamp("deleted_at") != null ?
                         rs.getTimestamp("deleted_at").toLocalDateTime() : null)
                 .build();
+    }
+
+    private boolean hasColumn(ResultSet rs, String columnName) throws SQLException {
+        java.sql.ResultSetMetaData rsmd = rs.getMetaData();
+        int columns = rsmd.getColumnCount();
+        for (int x = 1; x <= columns; x++) {
+            if (columnName.equals(rsmd.getColumnLabel(x).toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

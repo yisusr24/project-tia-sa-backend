@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
+import com.tia.inventario.model.dto.PageResponse;
+
 @RestController
 @RequestMapping("/inventario")
 @Tag(name = "Inventario", description = "Gestión de Stock y Movimientos")
@@ -17,10 +19,22 @@ import java.util.Map;
 public class InventarioController {
     @Autowired
     private InventarioService inventarioService;
+
     @GetMapping("/local/{localId}")
     @Operation(summary = "Listar inventario de un local")
     public ResponseEntity<ApiResponse<List<InventarioDTO>>> listarPorLocal(@PathVariable Long localId) {
         List<InventarioDTO> data = inventarioService.listarPorLocal(localId);
+        return ResponseEntity.ok(ApiResponse.success(data));
+    }
+
+    @GetMapping("/local/{localId}/buscar")
+    @Operation(summary = "Buscar productos en inventario de un local por nombre o código (paginado)")
+    public ResponseEntity<ApiResponse<PageResponse<InventarioDTO>>> buscarPorLocal(
+            @PathVariable Long localId,
+            @RequestParam String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size) {
+        PageResponse<InventarioDTO> data = inventarioService.buscarPorLocalPaginated(localId, query, page, size);
         return ResponseEntity.ok(ApiResponse.success(data));
     }
     @PostMapping("/asignar")

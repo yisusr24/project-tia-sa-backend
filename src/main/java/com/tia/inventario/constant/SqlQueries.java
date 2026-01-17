@@ -1,14 +1,20 @@
 package com.tia.inventario.constant;
 public class SqlQueries {
     public static final String PRODUCTO_FIND_ALL = """
-            SELECT * FROM productos
-            WHERE deleted_at IS NULL
-            ORDER BY id DESC
+            SELECT p.*, c.nombre as categoria_nombre, pr.razon_social as proveedor_nombre 
+            FROM productos p
+            LEFT JOIN categorias c ON p.categoria_id = c.id
+            LEFT JOIN proveedores pr ON p.proveedor_id = pr.id
+            WHERE p.deleted_at IS NULL
+            ORDER BY p.id DESC
             """;
     public static final String PRODUCTO_FIND_ALL_PAGINATED = """
-            SELECT * FROM productos
-            WHERE deleted_at IS NULL
-            ORDER BY id DESC
+            SELECT p.*, c.nombre as categoria_nombre, pr.razon_social as proveedor_nombre 
+            FROM productos p
+            LEFT JOIN categorias c ON p.categoria_id = c.id
+            LEFT JOIN proveedores pr ON p.proveedor_id = pr.id
+            WHERE p.deleted_at IS NULL
+            ORDER BY p.id DESC
             LIMIT ? OFFSET ?
             """;
     public static final String PRODUCTO_COUNT = """
@@ -16,18 +22,27 @@ public class SqlQueries {
             WHERE deleted_at IS NULL
             """;
     public static final String PRODUCTO_FIND_BY_ID = """
-            SELECT * FROM productos
-            WHERE id = ? AND deleted_at IS NULL
+            SELECT p.*, c.nombre as categoria_nombre, pr.razon_social as proveedor_nombre 
+            FROM productos p
+            LEFT JOIN categorias c ON p.categoria_id = c.id
+            LEFT JOIN proveedores pr ON p.proveedor_id = pr.id
+            WHERE p.id = ? AND p.deleted_at IS NULL
             """;
     public static final String PRODUCTO_FIND_BY_CODIGO = """
-            SELECT * FROM productos
-            WHERE codigo = ? AND deleted_at IS NULL
+            SELECT p.*, c.nombre as categoria_nombre, pr.razon_social as proveedor_nombre 
+            FROM productos p
+            LEFT JOIN categorias c ON p.categoria_id = c.id
+            LEFT JOIN proveedores pr ON p.proveedor_id = pr.id
+            WHERE p.codigo = ? AND p.deleted_at IS NULL
             """;
     public static final String PRODUCTO_SEARCH = """
-            SELECT * FROM productos
-            WHERE (LOWER(nombre) LIKE LOWER(?) OR LOWER(codigo) LIKE LOWER(?))
-              AND deleted_at IS NULL
-            ORDER BY nombre
+            SELECT p.*, c.nombre as categoria_nombre, pr.razon_social as proveedor_nombre 
+            FROM productos p
+            LEFT JOIN categorias c ON p.categoria_id = c.id
+            LEFT JOIN proveedores pr ON p.proveedor_id = pr.id
+            WHERE (LOWER(p.nombre) LIKE LOWER(?) OR LOWER(p.codigo) LIKE LOWER(?))
+              AND p.deleted_at IS NULL
+            ORDER BY p.nombre
             """;
     public static final String PRODUCTO_INSERT = """
             INSERT INTO productos (

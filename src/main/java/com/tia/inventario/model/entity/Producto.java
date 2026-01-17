@@ -31,4 +31,6 @@ public class Producto {
     private String createdBy;
     private String updatedBy;
     private LocalDateTime deletedAt;
+    private String categoriaNombre;
+    private String proveedorNombre;
 }

@@ -38,6 +38,13 @@ public class ProductoService {
     public List<Producto> buscarPorNombre(String query) {
         return repository.buscarPorNombre(query);
     }
+
+    public PageResponse<Producto> buscarPorNombrePaginado(String query, int page, int size) {
+        List<Producto> data = repository.buscarPorNombrePaginado(query, page, size);
+        long totalElements = repository.countBuscarPorNombre(query);
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+        return new PageResponse<>(data, totalElements, totalPages, page, size);
+    }
     @Transactional
     public Producto crear(ProductoDTO dto, String username) {
         repository.findByCodigo(dto.getCodigo()).ifPresent(p -> {
@@ -66,7 +73,11 @@ public class ProductoService {
     }
     @Transactional
     public Producto actualizar(Long id, ProductoDTO dto, String username) {
+        log.info("Actualizando producto ID {} - Usuario: {}", id, username);
+        
         Producto producto = findById(id);
+        String codigoAnterior = producto.getCodigo();
+        
         producto.setNombre(dto.getNombre());
         producto.setDescripcion(dto.getDescripcion());
         producto.setCategoriaId(dto.getCategoriaId());
@@ -80,18 +91,25 @@ public class ProductoService {
         producto.setEsPerecedero(dto.getEsPerecedero());
         producto.setDiasVigencia(dto.getDiasVigencia());
         producto.setUpdatedBy(username);
-        return repository.update(producto);
+        
+        Producto updated = repository.update(producto);
+        log.info("Producto actualizado: '{}' (ID {})", codigoAnterior, id);
+        return updated;
     }
     @Transactional
     public void eliminar(Long id) {
-        findById(id);
+        Producto producto = findById(id);
+        log.info("Eliminando producto: '{}' (ID {}, Código: {})", producto.getNombre(), id, producto.getCodigo());
         repository.delete(id);
+        log.info("Producto eliminado exitosamente: ID {}", id);
     }
     public List<Producto> findDeleted() {
         return repository.findDeleted();
     }
     @Transactional
     public void restaurar(Long id) {
+        log.info("Restaurando producto ID {}", id);
         repository.restore(id);
+        log.info("Producto restaurado: ID {}", id);
     }
 }

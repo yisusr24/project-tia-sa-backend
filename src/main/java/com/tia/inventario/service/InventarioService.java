@@ -11,14 +11,33 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import com.tia.inventario.model.dto.PageResponse;
+
 @Service
 public class InventarioService {
     @Autowired
     private InventarioRepository inventarioRepository;
+
     public List<InventarioDTO> listarPorLocal(Long localId) {
         return inventarioRepository.findByLocalId(localId).stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
+    }
+
+    public List<InventarioDTO> buscarPorLocal(Long localId, String query) {
+        return inventarioRepository.searchByLocalAndName(localId, query).stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public PageResponse<InventarioDTO> buscarPorLocalPaginated(Long localId, String query, int page, int size) {
+        List<Inventario> items = inventarioRepository.searchByLocalAndNamePaginated(localId, query, page, size);
+        long total = inventarioRepository.countSearchByLocalAndName(localId, query);
+        
+        List<InventarioDTO> content = items.stream().map(this::mapToDTO).collect(Collectors.toList());
+        int totalPages = (int) Math.ceil((double) total / size);
+        
+        return new PageResponse<>(content, total, totalPages, page, size);
     }
     @Transactional
     public void asignarProducto(Long localId, Long productoId, int stockInicial, String username) {

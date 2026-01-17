@@ -138,4 +138,27 @@ public class VentaRepository {
         venta.setItems(items);
         return java.util.Optional.of(venta);
     }
+    public List<VentaDTO> findByDateRange(java.time.LocalDateTime start, java.time.LocalDateTime end) {
+        String sql = """
+            SELECT v.*, l.nombre as local_nombre
+            FROM ventas v
+            JOIN locales l ON v.local_id = l.id
+            WHERE v.created_at BETWEEN ? AND ?
+            ORDER BY v.created_at DESC
+        """;
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            VentaDTO dto = new VentaDTO();
+            dto.setId(rs.getLong("id"));
+            dto.setNumeroVenta(rs.getString("numero_venta"));
+            dto.setLocalId(rs.getLong("local_id"));
+            dto.setLocalNombre(rs.getString("local_nombre"));
+            dto.setClienteNombre(rs.getString("cliente_nombre"));
+            dto.setClienteDocumento(rs.getString("cliente_documento"));
+            dto.setTotal(rs.getBigDecimal("total"));
+            dto.setEstado(rs.getString("estado"));
+            dto.setMetodoPago(rs.getString("metodo_pago"));
+            dto.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+            return dto;
+        }, start, end);
+    }
 }

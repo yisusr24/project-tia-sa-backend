@@ -43,8 +43,18 @@ public class ProductoController {
         return ResponseEntity.ok(ApiResponse.success(producto));
     }
     @PostMapping("/buscar")
-    @Operation(summary = "Buscar productos", description = "Búsqueda full-text por nombre")
-    public ResponseEntity<ApiResponse<List<Producto>>> buscar(@Valid @RequestBody BusquedaProductoDTO busqueda) {
+    @Operation(summary = "Buscar productos", description = "Busqueda texto por nombre")
+    public ResponseEntity<ApiResponse<Object>> buscar(
+            @Valid @RequestBody BusquedaProductoDTO busqueda,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        
+        if (page != null && size != null) {
+            log.info("POST /productos/buscar (paginado) - query: {}, page: {}, size: {}", busqueda.getQuery(), page, size);
+            PageResponse<Producto> response = service.buscarPorNombrePaginado(busqueda.getQuery(), page, size);
+            return ResponseEntity.ok(ApiResponse.success(response));
+        }
+        
         log.info("POST /productos/buscar - query: {}", busqueda.getQuery());
         List<Producto> productos = service.buscarPorNombre(busqueda.getQuery());
         return ResponseEntity.ok(ApiResponse.success(productos));

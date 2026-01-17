@@ -35,4 +35,9 @@ public class VentaService {
         return ventaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Venta no encontrada: " + id));
     }
+    
+    public List<VentaDTO> findAll() {
+        log.info("Obteniendo todas las ventas para reporte");
+        return ventaRepository.findAllPaginated(0, 10000);
+    }
 }

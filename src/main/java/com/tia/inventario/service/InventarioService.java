@@ -17,6 +17,8 @@ import com.tia.inventario.model.dto.PageResponse;
 public class InventarioService {
     @Autowired
     private InventarioRepository inventarioRepository;
+    @Autowired
+    private com.tia.inventario.repository.ProductoRepository productoRepository;
 
     public List<InventarioDTO> listarPorLocal(Long localId) {
         return inventarioRepository.findByLocalId(localId).stream()
@@ -45,11 +47,15 @@ public class InventarioService {
         if (existing.isPresent()) {
             throw new RuntimeException("El producto ya está asignado a este local");
         }
+        com.tia.inventario.model.entity.Producto producto = productoRepository.findById(productoId)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
         Inventario i = new Inventario();
         i.setLocalId(localId);
         i.setProductoId(productoId);
         i.setStockActual(stockInicial);
-        i.setStockMinimo(10);
+        i.setStockMinimo(producto.getStockMinimo() != null ? producto.getStockMinimo() : 0);
+        i.setStockMaximo(producto.getStockMaximo());
         i.setCreatedBy(username);
         i.setUpdatedBy(username);
         inventarioRepository.save(i);

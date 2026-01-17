@@ -1,0 +1,22 @@
+package com.tia.inventario.model.dto;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ErrorResponse {
+    private boolean success;
+    private String error;
+    private String message;
+    private LocalDateTime timestamp;
+    public ErrorResponse(String error, String message) {
+        this.success = false;
+        this.error = error;
+        this.message = message;
+        this.timestamp = LocalDateTime.now();
+    }
+}

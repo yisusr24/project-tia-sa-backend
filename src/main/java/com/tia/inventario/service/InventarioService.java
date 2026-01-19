@@ -98,8 +98,8 @@ public class InventarioService {
         m.setStockAnterior(currentStock);
         m.setStockNuevo(newStock);
         m.setPrecioUnitario(dto.getPrecioUnitario());
-        m.setMotivo(dto.getMotivo());
-        m.setNumeroDocumento(dto.getNumeroDocumento());
+        m.setMotivo(dto.getMotivo() != null && !dto.getMotivo().isBlank() ? dto.getMotivo() : null);
+        m.setNumeroDocumento(dto.getNumeroDocumento() != null && !dto.getNumeroDocumento().isBlank() ? dto.getNumeroDocumento() : null);
         m.setCreatedBy(username);
         inventarioRepository.saveMovimiento(m);
     }

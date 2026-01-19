@@ -1,27 +1,22 @@
-package com.tia.inventario.model.entity;
+package com.tia.inventario.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Usuario {
+public class UsuarioDTO {
     private Long id;
     private String nombreUsuario;
-    private String clave;
     private String correo;
     private String nombre;
     private String apellido;
     private String telefono;
-    private String rolNombre;
+    private String rol;
     private Boolean activo;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private String createdBy;
-    private String updatedBy;
+    private Long localId;
+    private String localNombre;
 }

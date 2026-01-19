@@ -1,5 +1,5 @@
 package com.tia.inventario.model.mapper;
-import com.tia.inventario.model.Inventario;
+import com.tia.inventario.model.entity.Inventario;
 import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;

@@ -1,8 +1,8 @@
 package com.tia.inventario.service;
 import com.tia.inventario.constant.ErrorMessages;
 import com.tia.inventario.exception.BusinessException;
-import com.tia.inventario.model.dto.PageResponse;
-import com.tia.inventario.model.dto.ProductoDTO;
+import com.tia.inventario.dto.PageResponse;
+import com.tia.inventario.dto.ProductoDTO;
 import com.tia.inventario.model.entity.Producto;
 import com.tia.inventario.repository.ProductoRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,5 +1,5 @@
 package com.tia.inventario.service;
-import com.tia.inventario.model.dto.UsuarioDTO;
+import com.tia.inventario.dto.UsuarioDTO;
 import com.tia.inventario.model.entity.Usuario;
 import com.tia.inventario.repository.UsuarioRepository;
 import lombok.extern.slf4j.Slf4j;

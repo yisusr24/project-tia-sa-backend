@@ -3,9 +3,9 @@ package com.tia.inventario.service;
 import com.tia.inventario.dto.InventarioDTO;
 import com.tia.inventario.dto.InventarioReporteDTO;
 import com.tia.inventario.dto.VentaReporteDTO;
-import com.tia.inventario.model.Inventario;
+import com.tia.inventario.model.entity.Inventario;
 import com.tia.inventario.repository.InventarioRepository;
-import com.tia.ventas.dto.VentaDTO;
+import com.tia.ventas.model.entity.Venta;
 import com.tia.ventas.repository.VentaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,7 @@ public class ReporteService {
             throw new IllegalArgumentException("La fecha de inicio no puede ser posterior a la fecha fin");
         }
         
-        List<VentaDTO> ventas = ventaRepository.findByDateRange(inicio.atStartOfDay(), fin.atTime(23, 59, 59));
+        List<Venta> ventas = ventaRepository.findByDateRange(inicio.atStartOfDay(), fin.atTime(23, 59, 59));
         
         if (ventas.isEmpty()) {
             throw new RuntimeException("No hay ventas en el rango especificado");

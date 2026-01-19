@@ -1,6 +1,6 @@
 package com.tia.inventario.controller;
 import com.tia.inventario.dto.LocalDTO;
-import com.tia.inventario.model.Local;
+import com.tia.inventario.model.entity.Local;
 import com.tia.inventario.dto.ApiResponse;
 import com.tia.inventario.service.LocalService;
 import io.swagger.v3.oas.annotations.Operation;

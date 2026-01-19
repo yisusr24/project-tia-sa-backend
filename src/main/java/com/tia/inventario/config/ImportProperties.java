@@ -8,11 +8,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "app.import")
 public class ImportProperties {
-    private Long maxFileSize = 10485760L;
-    private Integer maxRecords = 10000;
-    private Integer batchSize = 100;
-    private Integer timeoutSeconds = 300;
-    private String[] allowedFormats = {"csv"};
-    private Character delimiter = ';';
-    private String encoding = "UTF-8";
+    private Long maxFileSize;
+    private Integer maxRecords;
+    private Integer batchSize;
+    private Integer timeoutSeconds;
+    private String[] allowedFormats;
+    private Character delimiter;
+    private String encoding;
 }

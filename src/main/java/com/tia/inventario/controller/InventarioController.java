@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
-import com.tia.inventario.model.dto.PageResponse;
+import com.tia.inventario.dto.PageResponse;
 
 @RestController
 @RequestMapping("/inventario")

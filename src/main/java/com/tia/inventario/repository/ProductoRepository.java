@@ -1,5 +1,5 @@
 package com.tia.inventario.repository;
-import com.tia.inventario.constant.SqlQueries;
+
 import com.tia.inventario.model.entity.Producto;
 import com.tia.inventario.model.mapper.ProductoRowMapper;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +8,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
@@ -19,39 +21,81 @@ public class ProductoRepository {
     private final JdbcTemplate jdbcTemplate;
     private final ProductoRowMapper productoRowMapper = new ProductoRowMapper();
     public List<Producto> findAll() {
-        log.debug("Ejecutando: PRODUCTO_FIND_ALL");
-        return jdbcTemplate.query(SqlQueries.PRODUCTO_FIND_ALL, productoRowMapper);
+        String sql = """
+            SELECT p.*, c.nombre as categoria_nombre, pr.razon_social as proveedor_nombre 
+            FROM productos p
+            LEFT JOIN categorias c ON p.categoria_id = c.id
+            LEFT JOIN proveedores pr ON p.proveedor_id = pr.id
+            WHERE p.deleted_at IS NULL
+            ORDER BY p.id DESC
+            """;
+        return jdbcTemplate.query(sql, productoRowMapper);
     }
     public List<Producto> findAllPaginated(int page, int size) {
-        log.debug("Listando productos paginados - Page: {}, Size: {}", page, size);
         int offset = page * size;
-        return jdbcTemplate.query(SqlQueries.PRODUCTO_FIND_ALL_PAGINATED, productoRowMapper, size, offset);
+        String sql = """
+            SELECT p.*, c.nombre as categoria_nombre, pr.razon_social as proveedor_nombre 
+            FROM productos p
+            LEFT JOIN categorias c ON p.categoria_id = c.id
+            LEFT JOIN proveedores pr ON p.proveedor_id = pr.id
+            WHERE p.deleted_at IS NULL
+            ORDER BY p.id DESC
+            LIMIT ? OFFSET ?
+            """;
+        return jdbcTemplate.query(sql, productoRowMapper, size, offset);
     }
     public long count() {
-        return jdbcTemplate.queryForObject(SqlQueries.PRODUCTO_COUNT, Long.class);
+        String sql = "SELECT COUNT(*) FROM productos WHERE deleted_at IS NULL";
+        return jdbcTemplate.queryForObject(sql, Long.class);
     }
     public List<Producto> findDeletedPaginated(int page, int size) {
-        log.debug("Listando eliminados paginados - Page: {}, Size: {}", page, size);
         int offset = page * size;
-        return jdbcTemplate.query(SqlQueries.PRODUCTO_FIND_DELETED_PAGINATED, productoRowMapper, size, offset);
+        String sql = """
+            SELECT * FROM productos
+            WHERE deleted_at IS NOT NULL
+            ORDER BY id DESC
+            LIMIT ? OFFSET ?
+            """;
+        return jdbcTemplate.query(sql, productoRowMapper, size, offset);
     }
     public long countDeleted() {
-        return jdbcTemplate.queryForObject(SqlQueries.PRODUCTO_COUNT_DELETED, Long.class);
+        String sql = "SELECT COUNT(*) FROM productos WHERE deleted_at IS NOT NULL";
+        return jdbcTemplate.queryForObject(sql, Long.class);
     }
     public Optional<Producto> findById(Long id) {
-        log.debug("Buscando producto ID: {}", id);
-        List<Producto> result = jdbcTemplate.query(SqlQueries.PRODUCTO_FIND_BY_ID, productoRowMapper, id);
+        String sql = """
+            SELECT p.*, c.nombre as categoria_nombre, pr.razon_social as proveedor_nombre 
+            FROM productos p
+            LEFT JOIN categorias c ON p.categoria_id = c.id
+            LEFT JOIN proveedores pr ON p.proveedor_id = pr.id
+            WHERE p.id = ? AND p.deleted_at IS NULL
+            """;
+        List<Producto> result = jdbcTemplate.query(sql, productoRowMapper, id);
         return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
     }
     public Optional<Producto> findByCodigo(String codigo) {
-        log.debug("Buscando producto por código: {}", codigo);
-        List<Producto> result = jdbcTemplate.query(SqlQueries.PRODUCTO_FIND_BY_CODIGO, productoRowMapper, codigo);
+        String sql = """
+            SELECT p.*, c.nombre as categoria_nombre, pr.razon_social as proveedor_nombre 
+            FROM productos p
+            LEFT JOIN categorias c ON p.categoria_id = c.id
+            LEFT JOIN proveedores pr ON p.proveedor_id = pr.id
+            WHERE p.codigo = ? AND p.deleted_at IS NULL
+            """;
+        List<Producto> result = jdbcTemplate.query(sql, productoRowMapper, codigo);
         return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
     }
     public List<Producto> buscarPorNombre(String query) {
-        log.debug("Búsqueda parcial: {}", query);
         String term = "%" + query.trim() + "%";
-        return jdbcTemplate.query(SqlQueries.PRODUCTO_SEARCH, productoRowMapper, term, term);
+        String sql = """
+            SELECT p.*, c.nombre as categoria_nombre, pr.razon_social as proveedor_nombre 
+            FROM productos p
+            LEFT JOIN categorias c ON p.categoria_id = c.id
+            LEFT JOIN proveedores pr ON p.proveedor_id = pr.id
+            WHERE (LOWER(p.nombre) LIKE LOWER(?) OR LOWER(p.codigo) LIKE LOWER(?))
+              AND p.deleted_at IS NULL
+            ORDER BY p.nombre
+            """;
+        return jdbcTemplate.query(sql, productoRowMapper, term, term);
     }
 
     public List<Producto> buscarPorNombrePaginado(String query, int page, int size) {
@@ -146,11 +190,12 @@ public class ProductoRepository {
         log.info("Producto {} marcado como eliminado. Filas afectadas: {}", id, rowsAffected);
     }
     public List<Producto> findDeleted() {
-        log.debug("Ejecutando: PRODUCTO_FIND_DELETED");
-        return jdbcTemplate.query(SqlQueries.PRODUCTO_FIND_DELETED, productoRowMapper);
+        String sql = "SELECT * FROM productos WHERE deleted_at IS NOT NULL ORDER BY id DESC";
+        return jdbcTemplate.query(sql, productoRowMapper);
     }
     public void restore(Long id) {
-        int rowsAffected = jdbcTemplate.update(SqlQueries.PRODUCTO_RESTORE, id);
+        String sql = "UPDATE productos SET deleted_at = NULL, activo = TRUE WHERE id = ?";
+        int rowsAffected = jdbcTemplate.update(sql, id);
         log.info("Producto {} restaurado. Filas afectadas: {}", id, rowsAffected);
     }
 
@@ -161,7 +206,7 @@ public class ProductoRepository {
         return jdbcTemplate.query(sql, productoRowMapper, codigos.toArray());
     }
 
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public void updateAll(List<Producto> productos) {
         String sql = """
             UPDATE productos SET
@@ -201,7 +246,7 @@ public class ProductoRepository {
         return jdbcTemplate.queryForList("SELECT id FROM proveedores WHERE activo = true AND deleted_at IS NULL", Long.class);
     }
 
-    @org.springframework.transaction.annotation.Transactional
+    @Transactional
     public void saveAll(List<Producto> productos) {
         String sql = """
             INSERT INTO productos (

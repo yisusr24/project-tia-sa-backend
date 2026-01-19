@@ -1,8 +1,8 @@
 package com.tia.inventario.controller;
 
 import com.tia.inventario.dto.ApiResponse;
-import com.tia.inventario.model.dto.LoginRequestDTO;
-import com.tia.inventario.model.dto.UsuarioDTO;
+import com.tia.inventario.dto.LoginRequestDTO;
+import com.tia.inventario.dto.UsuarioDTO;
 import com.tia.inventario.service.AuthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

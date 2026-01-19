@@ -1,5 +1,5 @@
 package com.tia.inventario.exception;
-import com.tia.inventario.model.dto.ErrorResponse;
+import com.tia.inventario.dto.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

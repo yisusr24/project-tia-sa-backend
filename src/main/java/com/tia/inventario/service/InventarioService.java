@@ -1,8 +1,8 @@
 package com.tia.inventario.service;
 import com.tia.inventario.dto.InventarioDTO;
 import com.tia.inventario.dto.MovimientoInventarioDTO;
-import com.tia.inventario.model.Inventario;
-import com.tia.inventario.model.MovimientoInventario;
+import com.tia.inventario.model.entity.Inventario;
+import com.tia.inventario.model.entity.MovimientoInventario;
 import com.tia.inventario.repository.InventarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import com.tia.inventario.model.dto.PageResponse;
+import com.tia.inventario.dto.PageResponse;
 
 @Service
 public class InventarioService {

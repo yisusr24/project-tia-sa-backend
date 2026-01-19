@@ -1,6 +1,6 @@
 package com.tia.inventario.service;
 import com.tia.inventario.dto.LocalDTO;
-import com.tia.inventario.model.Local;
+import com.tia.inventario.model.entity.Local;
 import com.tia.inventario.repository.LocalRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

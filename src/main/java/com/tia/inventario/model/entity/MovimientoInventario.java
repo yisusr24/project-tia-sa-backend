@@ -1,4 +1,4 @@
-package com.tia.inventario.model;
+package com.tia.inventario.model.entity;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

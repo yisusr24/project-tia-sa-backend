@@ -1,8 +1,8 @@
 package com.tia.inventario.controller;
 import com.tia.inventario.dto.ApiResponse;
-import com.tia.inventario.model.dto.BusquedaProductoDTO;
-import com.tia.inventario.model.dto.PageResponse;
-import com.tia.inventario.model.dto.ProductoDTO;
+import com.tia.inventario.dto.BusquedaProductoDTO;
+import com.tia.inventario.dto.PageResponse;
+import com.tia.inventario.dto.ProductoDTO;
 import com.tia.inventario.model.entity.Producto;
 import com.tia.inventario.service.ProductoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +22,7 @@ import java.util.List;
 public class ProductoController {
     private final ProductoService service;
     @GetMapping
-    @Operation(summary = "Listar productos", description = "Obtiene productos activos. Soporta paginación opcional.")
+    @Operation(summary = "Listar productos", description = "Obtiene productos activos.")
     public ResponseEntity<ApiResponse<Object>> listar(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {

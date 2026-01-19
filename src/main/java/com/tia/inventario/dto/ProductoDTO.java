@@ -1,4 +1,4 @@
-package com.tia.inventario.model.dto;
+package com.tia.inventario.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;

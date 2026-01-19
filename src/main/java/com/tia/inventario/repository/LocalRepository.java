@@ -1,6 +1,6 @@
 package com.tia.inventario.repository;
-import com.tia.inventario.constant.SqlQueries;
-import com.tia.inventario.model.Local;
+
+import com.tia.inventario.model.entity.Local;
 import com.tia.inventario.model.mapper.LocalRowMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,16 +19,24 @@ public class LocalRepository {
     private final JdbcTemplate jdbcTemplate;
     private final LocalRowMapper localRowMapper = new LocalRowMapper();
     public List<Local> findAll() {
-        return jdbcTemplate.query(SqlQueries.LOCAL_FIND_ALL, localRowMapper);
+        String sql = "SELECT * FROM locales WHERE deleted_at IS NULL ORDER BY id";
+        return jdbcTemplate.query(sql, localRowMapper);
     }
     public Optional<Local> findById(Long id) {
-        List<Local> result = jdbcTemplate.query(SqlQueries.LOCAL_FIND_BY_ID, localRowMapper, id);
+        String sql = "SELECT * FROM locales WHERE id = ? AND deleted_at IS NULL";
+        List<Local> result = jdbcTemplate.query(sql, localRowMapper, id);
         return result.isEmpty() ? Optional.empty() : Optional.of(result.get(0));
     }
     public Local save(Local local) {
+        String sql = """
+            INSERT INTO locales (
+                codigo, nombre, direccion, ciudad, canton, pais,
+                telefono, correo, tipo, activo, created_by
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """;
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(SqlQueries.LOCAL_INSERT, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, local.getCodigo());
             ps.setString(2, local.getNombre());
             ps.setString(3, local.getDireccion());
@@ -47,7 +55,13 @@ public class LocalRepository {
         return findById(generatedId).orElseThrow();
     }
     public Local update(Local local) {
-        int rowsAffected = jdbcTemplate.update(SqlQueries.LOCAL_UPDATE,
+        String sql = """
+            UPDATE locales SET
+                nombre = ?, direccion = ?, ciudad = ?, canton = ?, pais = ?,
+                telefono = ?, correo = ?, tipo = ?, activo = ?, updated_by = ?
+            WHERE id = ? AND deleted_at IS NULL
+            """;
+        int rowsAffected = jdbcTemplate.update(sql,
             local.getNombre(),
             local.getDireccion(),
             local.getCiudad(),
@@ -64,14 +78,17 @@ public class LocalRepository {
         return findById(local.getId()).orElseThrow();
     }
     public void delete(Long id) {
-        jdbcTemplate.update(SqlQueries.LOCAL_DELETE, id);
+        String sql = "UPDATE locales SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?";
+        jdbcTemplate.update(sql, id);
         log.info("Local eliminado (soft delete) ID: {}", id);
     }
     public List<Local> findDeleted() {
-        return jdbcTemplate.query(SqlQueries.LOCAL_FIND_DELETED, localRowMapper);
+        String sql = "SELECT * FROM locales WHERE deleted_at IS NOT NULL ORDER BY id";
+        return jdbcTemplate.query(sql, localRowMapper);
     }
     public void restore(Long id) {
-        jdbcTemplate.update(SqlQueries.LOCAL_RESTORE, id);
+        String sql = "UPDATE locales SET deleted_at = NULL, activo = TRUE WHERE id = ?";
+        jdbcTemplate.update(sql, id);
         log.info("Local restaurado ID: {}", id);
     }
 }

@@ -1,8 +1,7 @@
 package com.tia.inventario.repository;
-import com.tia.inventario.model.Inventario;
-import com.tia.inventario.model.MovimientoInventario;
+import com.tia.inventario.model.entity.Inventario;
+import com.tia.inventario.model.entity.MovimientoInventario;
 import com.tia.inventario.model.mapper.InventarioRowMapper;
-import com.tia.inventario.model.mapper.MovimientoInventarioRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,7 +14,6 @@ public class InventarioRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     private final InventarioRowMapper inventarioRowMapper = new InventarioRowMapper();
-    private final MovimientoInventarioRowMapper movimientoRowMapper = new MovimientoInventarioRowMapper();
     public List<Inventario> findByLocalId(Long localId) {
         String sql = """
             SELECT i.*, p.nombre as producto_nombre, p.codigo as producto_codigo, l.nombre as local_nombre, p.precio_venta

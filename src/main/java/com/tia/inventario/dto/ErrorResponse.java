@@ -1,4 +1,4 @@
-package com.tia.inventario.model.dto;
+package com.tia.inventario.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
